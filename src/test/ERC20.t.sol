@@ -55,11 +55,12 @@ contract HandleToken is BaseSetup {
     }
 
     function transferFromToken(
+        address spender,
         address from,
         address to,
         uint256 transferAmount
     ) public returns (bool) {
-        _vm.prank(to);
+        _vm.prank(spender);
         return this.transferFrom(from, to, transferAmount);
     }
 }
@@ -116,7 +117,7 @@ contract SuccessTransferFromTest is HandleToken {
         uint256 amount
     ) public {
         uint256 fromBalance = balanceOf(from);
-        bool success = transferFromToken(from, to, amount);
+        bool success = transferFromToken(to, from, to, amount);
 
         assertTrue(success);
         assertEqDecimal(balanceOf(from), fromBalance - amount, decimals());
@@ -191,7 +192,7 @@ contract RevertTransferTest is HandleToken {
     }
 }
 
-contract RevertTransferFromTest is HandleToken {
+contract RevertInsufficientAllowanceTest is HandleToken {
     uint256 internal _mintAmount = _maxTransferAmount;
 
     function setUp() public override {
@@ -207,7 +208,7 @@ contract RevertTransferFromTest is HandleToken {
         string memory expRevertMessage
     ) public {
         _vm.expectRevert(abi.encodePacked(expRevertMessage));
-        transferFromToken(from, to, amount);
+        transferFromToken(to, from, to, amount);
     }
 
     function testCannotTransferFromWithoutApproval() public {
