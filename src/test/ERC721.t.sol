@@ -48,7 +48,7 @@ contract HandleNFT is BaseSetup {
 
     function transferNFT(address from, address to, uint256 tokenId) public {
         _vm.prank(from);
-        this.safeTransferFrom(from, to, tokenId);
+        this.transferFrom(from, to, tokenId);
     }
 
     function transferNFTFromSpender(
@@ -58,7 +58,7 @@ contract HandleNFT is BaseSetup {
         uint256 tokenId
     ) public {
         _vm.prank(spender);
-        this.safeTransferFrom(from, to, tokenId);
+        this.transferFrom(from, to, tokenId);
     }
 
     function approveNFT(
@@ -184,6 +184,6 @@ contract RevertBurnTest is HandleNFT {
     }
 
     function testCannotBurnIfNotOwner() public {
-        itCannotBurnIfNotOwner(_bob, 0, "Not the owner");
+        itCannotBurnIfNotOwner(_bob, 0, "ERC721: burn caller is not owner");
     }
 }

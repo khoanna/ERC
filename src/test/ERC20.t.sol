@@ -54,6 +54,11 @@ contract HandleToken is BaseSetup {
         return this.approve(spender, amount);
     }
 
+    function burnToken(address from, uint256 burnAmount) public returns (bool) {
+        _vm.prank(from);
+        return this.burn(burnAmount);
+    }
+
     function transferFromToken(
         address spender,
         address from,
@@ -154,6 +159,35 @@ contract SuccessTransferFromTest is HandleToken {
     }
 }
 
+contract SuccesBurnTest is HandleToken {
+    uint256 internal _mintAmount = _maxTransferAmount;
+
+    function setUp() public override {
+        HandleToken.setUp();
+        console.log("When Alice has sufficient funds to burn");
+        _mint(_alice, _mintAmount);
+    }
+
+    function itBurnsAmountCorrectly(address from, uint256 amount) public {
+        uint256 fromBalance = balanceOf(from);
+        bool success = burnToken(from, amount);
+
+        assertTrue(success);
+        assertEqDecimal(balanceOf(from), fromBalance - amount, decimals());
+        assertEqDecimal(totalSupply(), _mintAmount - amount, decimals());
+    }
+
+    function testBurnAllTokens() public {
+        uint256 t = _maxTransferAmount;
+        itBurnsAmountCorrectly(_alice, t);
+    }
+
+    function testBurnHalfTokens() public {
+        uint256 t = _maxTransferAmount / 2;
+        itBurnsAmountCorrectly(_alice, t);
+    }
+}
+
 contract RevertTransferTest is HandleToken {
     uint256 internal _mintAmount = _maxTransferAmount - 1e18;
 
@@ -229,6 +263,33 @@ contract RevertInsufficientAllowanceTest is HandleToken {
             _bob,
             _maxTransferAmount,
             "ERC20: insufficient allowance"
+        );
+    }
+}
+
+contract RevertBurnTest is HandleToken {
+    uint256 internal _mintAmount = _maxTransferAmount - 1e18;
+
+    function setUp() public override {
+        HandleToken.setUp();
+        console.log("When Alice has insufficient funds to burn");
+        _mint(_alice, _mintAmount);
+    }
+
+    function itRevertsBurn(
+        address from,
+        uint256 amount,
+        string memory expRevertMessage
+    ) public {
+        _vm.expectRevert(abi.encodePacked(expRevertMessage));
+        burnToken(from, amount);
+    }
+
+    function testCannotBurnMoreThanAvailable() public {
+        itRevertsBurn(
+            _alice,
+            _maxTransferAmount,
+            "ERC20: burn amount exceeds balance"
         );
     }
 }
