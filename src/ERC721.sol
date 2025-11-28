@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "lib/openzeppelin-contracts/contracts/utils/Strings.sol";
 
 contract MyNFT {
     using Strings for uint256;
@@ -52,7 +52,15 @@ contract MyNFT {
             _owners[tokenId] != address(0),
             "ERC721Metadata: URI query for nonexistent token"
         );
-        return string(abi.encodePacked(_baseURI, tokenId.toString()));
+        return string.concat(_baseURI, tokenId.toString());
+    }
+
+    function getApproved(uint256 tokenId) public view returns (address) {
+        require(
+            isExists(tokenId),
+            "ERC721: approved query for nonexistent token"
+        );
+        return _tokenApprovals[tokenId];
     }
 
     // Mint function

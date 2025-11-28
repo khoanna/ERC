@@ -47,10 +47,7 @@ contract BaseSetup is DSTest {
         _users = _utils.createUsers(5);
 
         _alice = _users[0];
-        _vm.label(_alice, "Alice");
-
         _bob = _users[1];
-        _vm.label(_bob, "Bob");
     }
 }
 

@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 contract MyToken {
     string private _name;
     string private _symbol;
-    uint8 private _decimals;
+
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
