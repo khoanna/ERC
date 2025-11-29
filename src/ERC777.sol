@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC777/ERC777.sol";
-import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC1820Registry.sol";
+import "lib/openzeppelin-contracts/contracts/token/ERC777/ERC777.sol";
+import "lib/openzeppelin-contracts/contracts/token/ERC777/IERC777Recipient.sol";
+import "lib/openzeppelin-contracts/contracts/utils/introspection/IERC1820Registry.sol";
 
 contract MyERC777 is ERC777 {
     constructor() ERC777("MyToken", "MTK", new address[](0)) {}

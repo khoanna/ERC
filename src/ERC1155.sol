@@ -6,7 +6,6 @@ import "lib/openzeppelin-contracts/contracts/utils/Strings.sol";
 contract MyERC1155 {
     using Strings for uint256;
 
-    address private immutable _admin;
     string private _uri;
     // Token Id => Account => Balance
     mapping(uint256 => mapping(address => uint256)) private _balances;
@@ -16,7 +15,6 @@ contract MyERC1155 {
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
     constructor(string memory uri_) {
-        _admin = msg.sender;
         _uri = uri_;
     }
 
@@ -29,6 +27,7 @@ contract MyERC1155 {
         address account,
         uint256 id
     ) public view returns (uint256) {
+        require(isExist(id), "Token does not exist");
         require(account != address(0), "Balance query for the zero address");
         return _balances[id][account];
     }
@@ -46,6 +45,7 @@ contract MyERC1155 {
 
     // Burn functions
     function burn(uint256 id, address from, uint256 amount) public {
+        require(isExist(id), "Token does not exist");
         require(msg.sender == from, "Can only burn from own account");
         require(from != address(0), "Burn from the zero address");
         uint256 fromBalance = _balances[id][from];
@@ -67,6 +67,7 @@ contract MyERC1155 {
         uint256 id,
         uint256 amount
     ) public {
+        require(isExist(id), "Token does not exist");
         require(
             from == msg.sender || _operatorApprovals[from][msg.sender],
             "Caller is not owner nor approved"
@@ -76,5 +77,10 @@ contract MyERC1155 {
         require(fromBalance >= amount, "Transfer amount exceeds balance");
         _balances[id][from] = fromBalance - amount;
         _balances[id][to] += amount;
+    }
+
+    // Helper function
+    function isExist(uint256 id) public view returns (bool) {
+        return _totalSupply[id] > 0;
     }
 }

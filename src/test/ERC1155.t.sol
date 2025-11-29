@@ -30,6 +30,7 @@ contract BaseSetup is DSTest, MyERC1155("https://token-cdn-domain/") {
 
 contract HandleERC1155 is BaseSetup {
     uint256 internal _maxAmount = 12e18;
+    uint256 internal _defaultId = 0;
 
     function setUp() public virtual override {
         BaseSetup.setUp();
@@ -78,46 +79,63 @@ contract HandleERC1155 is BaseSetup {
 contract BasicTest is HandleERC1155 {
     function setUp() public virtual override {
         HandleERC1155.setUp();
-        _mint(_alice, 0, _maxAmount);
-        _mint(_bob, 0, _maxAmount);
+        _mint(_alice, _defaultId, _maxAmount);
+        _mint(_bob, _defaultId, _maxAmount);
     }
 
     function testTotalSupply() public {
-        assertEq(totalSupply(0), _maxAmount * 2);
+        assertEq(totalSupply(_defaultId), _maxAmount * 2);
     }
 
-    function testBalanceOf() public {
-        assertEq(balanceOf(_alice, 0), _maxAmount);
-        assertEq(balanceOf(_bob, 0), _maxAmount);
+    function testBalanceOfSuccess() public {
+        assertEq(balanceOf(_alice, _defaultId), _maxAmount);
+        assertEq(balanceOf(_bob, _defaultId), _maxAmount);
     }
 
-    function testTransfer() public {
-        transferERC1155(_alice, _mike, 0, _maxAmount / 2);
-        assertEq(balanceOf(_alice, 0), _maxAmount / 2);
-        assertEq(balanceOf(_mike, 0), _maxAmount / 2);
+    function testTransferSuccess() public {
+        transferERC1155(_alice, _mike, _defaultId, _maxAmount / 2);
+        assertEq(balanceOf(_alice, _defaultId), _maxAmount / 2);
+        assertEq(balanceOf(_mike, _defaultId), _maxAmount / 2);
     }
 
     function testTransferFromSpenderSuccess() public {
         approveERC1155(_bob, _alice, true);
-        transferFromSpenderERC1155(_alice, _bob, _mike, 0, _maxAmount / 2);
-        assertEq(balanceOf(_bob, 0), _maxAmount / 2);
-        assertEq(balanceOf(_mike, 0), _maxAmount / 2);
+        transferFromSpenderERC1155(
+            _alice,
+            _bob,
+            _mike,
+            _defaultId,
+            _maxAmount / 2
+        );
+        assertEq(balanceOf(_bob, _defaultId), _maxAmount / 2);
+        assertEq(balanceOf(_mike, _defaultId), _maxAmount / 2);
     }
 
     function testBurnSuccess() public {
-        burnERC1155(_bob, 0, _maxAmount / 3);
-        assertEq(balanceOf(_bob, 0), (_maxAmount * 2) / 3);
-        assertEq(totalSupply(0), (_maxAmount * 5) / 3);
+        burnERC1155(_bob, _defaultId, _maxAmount / 3);
+        assertEq(balanceOf(_bob, _defaultId), (_maxAmount * 2) / 3);
+        assertEq(totalSupply(_defaultId), (_maxAmount * 5) / 3);
+    }
+
+    function testTransferNotExistRevert() public {
+        _vm.expectRevert("Token does not exist");
+        transferERC1155(_alice, _mike, _defaultId + 1, _maxAmount / 2);
     }
 
     function testTransferFromSpenderRevert() public {
         _vm.expectRevert("Caller is not owner nor approved");
-        transferFromSpenderERC1155(_alice, _bob, _mike, 0, _maxAmount / 2);
+        transferFromSpenderERC1155(
+            _alice,
+            _bob,
+            _mike,
+            _defaultId,
+            _maxAmount / 2
+        );
     }
 
     function testBurnRevert() public {
         _vm.expectRevert("Burn amount exceeds balance");
-        burnERC1155(_bob, 0, _maxAmount + 1);
+        burnERC1155(_bob, _defaultId, _maxAmount + 1);
     }
 
     function testUri() public {
@@ -125,6 +143,6 @@ contract BasicTest is HandleERC1155 {
             "https://token-cdn-domain/{id}.json",
             "0"
         );
-        assertEq(getUri(0), expectedUri);
+        assertEq(getUri(_defaultId), expectedUri);
     }
 }

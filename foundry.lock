@@ -1,14 +1,23 @@
 {
+  "lib/account-abstraction": {
+    "tag": {
+      "name": "v0.7.0",
+      "rev": "7af70c8993a6f42973f520ae0752386a5032abe7"
+    }
+  },
   "lib/ds-test": {
     "rev": "0a5da56b0d65960e6a994d2ec8245e6edd38c248"
   },
   "lib/forge-std": {
-    "rev": "4aa8f014bd2ef6df9a96f1fa1cedb3e0dda6f901"
+    "tag": {
+      "name": "v1.12.0",
+      "rev": "7117c90c8cf6c68e5acce4f09a6b24715cea4de6"
+    }
   },
   "lib/openzeppelin-contracts": {
     "tag": {
-      "name": "v4.5.0",
-      "rev": "a5445b0afb8b350417b6e6ab3160554967bc151f"
+      "name": "v4.9.6",
+      "rev": "dc44c9f1a4c3b10af99492eed84f83ed244203f6"
     }
   },
   "lib/solmate": {
