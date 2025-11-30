@@ -23,6 +23,16 @@
     "solhint": "^3.3.6"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.3"
+    "@openzeppelin/contracts": "^4.9.3",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.15.0"
+  },
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FrankieIsLost/forge-template/issues"
   }
 }
